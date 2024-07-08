@@ -20,5 +20,5 @@ public interface ModuleRepository extends JpaRepository<ModuleModel, UUID> {
 
 //    @Modifying // Indica que o método anotado é uma operação de modificação no banco de dados, como uma atualização, inserção ou exclusão.
     @Query(value = "SELECT * FROM TB_MODULES WHERE course_course_id = :courseId", nativeQuery = true)
-    List<ModuleModel> findAllModulesIntouCourse(@Param("courseId") UUID courseId);
+    List<ModuleModel> findAllModulesIntoCourse(@Param("courseId") UUID courseId);
 }
