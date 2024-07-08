@@ -35,10 +35,10 @@ public class ModuleModel implements Serializable {
 
 //  @JsonIgnore // Essa anotação sobressai ao @JsonProperty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Configuração de acesso que significa que essa propriedade só pode ser escrita (set) para desserialização, mas não será lida (get) na serialização, ou seja, o valor da propriedade não é incluído na serialização.
-    @ManyToOne(optional = false)  // cria chave estrangeira(course_course_id) para o course
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)  // cria chave estrangeira(course_course_id) para o course e carregamento lento(FetchType.LAZY)
     private CourseModel course;
 
-    @OneToMany(mappedBy = "module") // Campo que está a chave estrangeira na outra tabela para referenciar esse module
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY) // Campo que está a chave estrangeira na outra tabela para referenciar esse module
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Set<LessonModel> lessons;
 
