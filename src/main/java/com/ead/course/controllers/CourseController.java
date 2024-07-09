@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class CourseController {
     CourseService courseService;
 
     @PostMapping
-    public ResponseEntity<?> saveCourse(@RequestBody CourseDTO courseDTO){
+    public ResponseEntity<?> saveCourse(@RequestBody @Valid CourseDTO courseDTO){
         CourseModel courseModel = new CourseModel();
         BeanUtils.copyProperties(courseDTO, courseModel);
         courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -34,18 +35,39 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseModel);
     }
 
-
-    @DeleteMapping(value = "/{courseId}")
-    public ResponseEntity<?> deleteCourse(@PathVariable(value = "courseId") UUID courseId){
-
+    @PutMapping(value = "/{courseId}")
+    public ResponseEntity<?> updateCourse(@PathVariable(value = "courseId") UUID courseId, @RequestBody @Valid CourseDTO courseDTO){
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
 
         if(courseModelOptional.isEmpty()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found!");
-        }else {
-            courseService.delete(courseModelOptional.get());
-            return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully!");
         }
+
+        CourseModel courseModel = courseModelOptional.get();
+        courseModel.setName(courseDTO.getName());
+        courseModel.setDescription(courseDTO.getDescription());
+        courseModel.setImageUrl(courseDTO.getImageUrl());
+        courseModel.setCourseStatus(courseDTO.getCourseStatus());
+        courseModel.setCourseLevel(courseDTO.getCourseLevel());
+        courseModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+        courseModel = courseService.save(courseModel);
+
+        return ResponseEntity.status(HttpStatus.OK).body(courseModel);
+
+
+    }
+
+    @DeleteMapping(value = "/{courseId}")
+    public ResponseEntity<?> deleteCourse(@PathVariable(value = "courseId") UUID courseId) {
+        Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
+
+        if (courseModelOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found!");
+        }
+        courseService.delete(courseModelOptional.get());
+        return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully!");
+
 
     }
 }
