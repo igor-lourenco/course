@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600) // configura CORS para permitir solicitações de qualquer origem e define que a resposta de pré-verificação pode ser armazenada em cache por uma hora
@@ -32,4 +34,18 @@ public class CourseController {
         return ResponseEntity.status(HttpStatus.CREATED).body(courseModel);
     }
 
+
+    @DeleteMapping(value = "/{courseId}")
+    public ResponseEntity<?> deleteCourse(@PathVariable(value = "courseId") UUID courseId){
+
+        Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
+
+        if(courseModelOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found!");
+        }else {
+            courseService.delete(courseModelOptional.get());
+            return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully!");
+        }
+
+    }
 }
