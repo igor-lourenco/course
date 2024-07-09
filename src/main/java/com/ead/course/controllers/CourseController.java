@@ -2,6 +2,7 @@ package com.ead.course.controllers;
 
 import com.ead.course.DTOs.CourseDTO;
 import com.ead.course.models.CourseModel;
+import com.ead.course.services.CourseServiceInterface;
 import com.ead.course.services.implementations.CourseService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ import java.util.UUID;
 @RequestMapping("/courses")
 public class CourseController {
 
-    @Autowired
-    CourseService courseService;
+    @Autowired // Em casos de múltiplas implementações, é necessário usar @Qualifier para evitar ambiguidades e especificar explicitamente qual implementação deve ser injetada.
+    CourseServiceInterface courseService;
 
     @GetMapping
     public ResponseEntity<List<CourseModel>> getAllCourses(){
