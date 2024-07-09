@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +23,22 @@ public class CourseController {
 
     @Autowired
     CourseService courseService;
+
+    @GetMapping
+    public ResponseEntity<List<CourseModel>> getAllCourses(){
+        return ResponseEntity.ok(courseService.findAll());
+    }
+
+    @GetMapping(value = "/{courseId}")
+    public ResponseEntity<?> getByIdCourse(@PathVariable(value = "courseId") UUID courseId){
+        Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
+
+        if(courseModelOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found!");
+        }
+
+        return ResponseEntity.ok(courseModelOptional.get());
+    }
 
     @PostMapping
     public ResponseEntity<?> saveCourse(@RequestBody @Valid CourseDTO courseDTO){
