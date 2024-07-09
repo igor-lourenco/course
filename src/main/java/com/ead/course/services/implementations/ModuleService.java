@@ -7,7 +7,7 @@ import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.services.ModuleServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public class ModuleService implements ModuleServiceInterface {

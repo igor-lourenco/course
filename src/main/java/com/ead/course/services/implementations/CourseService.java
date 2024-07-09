@@ -8,10 +8,12 @@ import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.services.CourseServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
+@Service
 public class CourseService implements CourseServiceInterface {
 
     @Autowired
@@ -41,5 +43,10 @@ public class CourseService implements CourseServiceInterface {
         }
 
         courseRepository.delete(courseModel);
+    }
+
+    @Override
+    public CourseModel save(CourseModel courseModel) {
+        return courseRepository.save(courseModel);
     }
 }
