@@ -1,7 +1,19 @@
 package com.ead.course.services;
 
-import org.springframework.stereotype.Service;
+import com.ead.course.models.LessonModel;
+import com.ead.course.models.ModuleModel;
 
-@Service
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+
 public interface LessonServiceInterface {
+    LessonModel save(LessonModel lessonModel);
+
+    Optional<LessonModel> findLessonIntoModule(UUID moduleId, UUID lessonId);
+
+    void delete(LessonModel lessonModel);
+
+    List<LessonModel> findAllLessonsIntoModule(UUID moduleId);
 }

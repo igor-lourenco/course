@@ -18,4 +18,6 @@ public interface ModuleServiceInterface {
     List<ModuleModel> findAll();
 
     List<ModuleModel> findAllModulesIntoCourse(UUID courseId);
+
+    Optional<ModuleModel> findById(UUID moduleId);
 }
