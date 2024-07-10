@@ -3,9 +3,13 @@ package com.ead.course.controllers;
 import com.ead.course.DTOs.CourseDTO;
 import com.ead.course.models.CourseModel;
 import com.ead.course.services.CourseServiceInterface;
-import com.ead.course.services.implementations.CourseService;
+import com.ead.course.specifications.SpecificationTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,8 +29,13 @@ public class CourseController {
     CourseServiceInterface courseService;
 
     @GetMapping
-    public ResponseEntity<List<CourseModel>> getAllCourses(){
-        return ResponseEntity.ok(courseService.findAll());
+    public ResponseEntity<Page<CourseModel>> getAllCoursesPaged(
+            SpecificationTemplate.CourseSpec spec,
+            @PageableDefault(page = 0, size = 12, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable){
+
+        Page<CourseModel> courseModelPage = courseService.findAllPaged(spec, pageable);
+
+        return ResponseEntity.ok(courseModelPage);
     }
 
     @GetMapping(value = "/{courseId}")
