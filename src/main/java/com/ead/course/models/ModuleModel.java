@@ -30,7 +30,7 @@ public class ModuleModel implements Serializable {
     private String description;
 
     @Column(nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss:SSS")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'") // Padrão ISO 8601 UTC
     private LocalDateTime creationDate;
 
 //  @JsonIgnore // Essa anotação sobressai ao @JsonProperty
