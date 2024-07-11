@@ -9,6 +9,7 @@ import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.ui.Model;
 
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -60,5 +61,31 @@ public class SpecificationTemplate {
         });
     }
 
+
+    public static Specification<LessonModel> findLessonsByModuleId(final UUID moduleId) {
+        return ((root, query, criteriaBuilder) -> {
+
+            // Especifica pra eliminar os resultados duplicados da consulta
+            query.distinct(true);
+
+            // Define a raiz da entidade LessonModel
+            Root<LessonModel> lessonRoot = root;
+
+            // Adiciona a entidade ModuleModel ao objeto query para a junção entre ModuleModel e LessonModel
+            Root<ModuleModel> moduleRoot = query.from(ModuleModel.class);
+
+            // Obtém a coleção de 'lessons' associados a um 'module'
+            Expression<Collection<LessonModel>> lessonsOfThisModule = moduleRoot.get("lessons");
+
+            // Cria um Predicate para verificar se o moduleId do module é igual ao moduleId fornecido
+            Predicate criteriaBuilderModuleEqualModuleId = criteriaBuilder.equal(moduleRoot.get("moduleId"), moduleId);
+
+            // Cria um Predicate para verificar se o lesson atual(lessonRoot) é um membro da coleção de modules (lessonsOfThisModule)
+            Predicate criteriaBuilderLessonIsMemberModule = criteriaBuilder.isMember(lessonRoot, lessonsOfThisModule);
+
+            // Combina os dois Predicate usando o "AND" e retorna o resultado
+            return criteriaBuilder.and(criteriaBuilderModuleEqualModuleId, criteriaBuilderLessonIsMemberModule);
+        });
+    }
 
 }

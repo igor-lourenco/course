@@ -1,5 +1,6 @@
 package com.ead.course.services;
 
+import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,5 @@ public interface ModuleServiceInterface {
     Optional<ModuleModel> findById(UUID moduleId);
 
     Page<ModuleModel> findAllModulesByCourseId(Specification<ModuleModel> findModulesByCourseIdSpec, Pageable pageable);
+
 }

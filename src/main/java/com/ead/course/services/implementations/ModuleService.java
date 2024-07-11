@@ -65,4 +65,6 @@ public class ModuleService implements ModuleServiceInterface {
     public Page<ModuleModel> findAllModulesByCourseId(Specification<ModuleModel> findModulesByCourseIdSpec, Pageable pageable) {
         return moduleRepository.findAll(findModulesByCourseIdSpec, pageable);
     }
+
+
 }
