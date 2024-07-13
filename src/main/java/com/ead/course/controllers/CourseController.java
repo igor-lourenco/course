@@ -79,7 +79,6 @@ public class CourseController {
     public ResponseEntity<?> updateCourse(@PathVariable(value = "courseId") UUID courseId, @RequestBody @Valid CourseDTO courseDTO){
         log.info("REQUEST - PUT [updateCourse] PARAMS :: courseId: {} - BODY: {}", courseId.toString(), logUtils.convertObjectToJson(courseDTO));
 
-
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
 
         if(courseModelOptional.isEmpty()){
