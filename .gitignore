@@ -36,3 +36,6 @@ build/
 .mvn
 mvnw
 mvnw.cmd
+
+### Pasta de logs ###
+logs*
