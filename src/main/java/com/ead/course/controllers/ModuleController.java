@@ -75,7 +75,7 @@ public class ModuleController {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
 
         if(courseModelOptional.isEmpty()){
-        log.info("REQUEST - POST [saveModule] : Course Not Found: {}", courseId.toString());
+            log.info("REQUEST - POST [saveModule] : Course Not Found: {}", courseId.toString());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found!");
         }
 
