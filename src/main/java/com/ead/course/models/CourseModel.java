@@ -57,11 +57,15 @@ public class CourseModel implements Serializable {
     private UUID userInstructor;
 
 //  @JsonIgnore // Essa anotação sobressai ao @JsonProperty
-//    @OnDelete(action = OnDeleteAction.CASCADE) // Permite definir o comportamento de exclusão em cascata no nível do banco de dados para relacionamentos entre entidades
+//  @OnDelete(action = OnDeleteAction.CASCADE) // Permite definir o comportamento de exclusão em cascata no nível do banco de dados para relacionamentos entre entidades
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Configuração de acesso que significa que essa propriedade só pode ser escrita (set) para desserialização, mas não será lida (get) na serialização, ou seja, o valor da propriedade não é incluído na serialização.
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) // Campo que está a chave estrangeira na outra tabela para referenciar esse course e carregamento lento(FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT) //  Evita a N+1 consulta, o hibernate carrega as entidades relacionadas usando uma subconsulta. Em vez de executar uma consulta separada para cada entidade relacionada, o Hibernate executa uma única subconsulta para carregar todas as entidades relacionadas em uma única operação.
     private Set<ModuleModel> modules;
 
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Configuração de acesso que significa que essa propriedade só pode ser escrita (set) para desserialização, mas não será lida (get) na serialização, ou seja, o valor da propriedade não é incluído na serialização.
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) // Campo que está a chave estrangeira na outra tabela para referenciar esse course e carregamento lento(FetchType.LAZY)
+    private Set<CourseUserModel> coursesUsers;
 
 }

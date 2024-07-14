@@ -36,6 +36,6 @@ public class LessonModel implements Serializable {
 
 //  @JsonIgnore // Essa anotação sobressai ao @JsonProperty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY) // cria chave estrangeira(module_module_id) para o module e carregamento lento(FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY) // cria chave estrangeira(module_module_id) para referenciar ModuleModel e carregamento lento(FetchType.LAZY)
     private ModuleModel module;
 }
