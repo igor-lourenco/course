@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +37,18 @@ public class CourseController {
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCoursesPaged(
             SpecificationTemplate.CourseSpec spec,
-            @PageableDefault(page = 0, size = 12, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable){
-        log.info("REQUEST - GET [getAllCoursesPaged] PARAMS PAGED: {}", pageable.toString());
+            @PageableDefault(page = 0, size = 12, sort = "courseId", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(name = "userId", required = false) UUID userId){
+        log.info("REQUEST - GET [getAllCoursesPaged] PARAMS :: userId: {} - PAGED: {}", userId, pageable.toString());
 
-        Page<CourseModel> courseModelPage = courseService.findAllPaged(spec, pageable);
+        Page<CourseModel> courseModelPage = null;
+
+        if(userId != null){
+            Specification<CourseModel> courseUserSpecification = SpecificationTemplate.courseUserId(userId).and(spec);
+            courseModelPage = courseService.findAllPaged(courseUserSpecification, pageable);
+        }else{
+            courseModelPage = courseService.findAllPaged(spec, pageable);
+        }
 
         log.info("RESPONSE - GET [getAllCoursesPaged] : {}", logUtils.convertObjectToJson(courseModelPage));
         return ResponseEntity.ok(courseModelPage);

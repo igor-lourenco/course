@@ -1,6 +1,7 @@
 package com.ead.course.specifications;
 
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
@@ -12,6 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.ui.Model;
 
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
@@ -85,6 +87,18 @@ public class SpecificationTemplate {
 
             // Combina os dois Predicate usando o "AND" e retorna o resultado
             return criteriaBuilder.and(criteriaBuilderModuleEqualModuleId, criteriaBuilderLessonIsMemberModule);
+        });
+    }
+
+    public static Specification<CourseModel> courseUserId(final UUID userId) {
+        return ((root, query, criteriaBuilder) -> {
+            query.distinct(true);
+
+            //Realiza uma junção (join) entre CourseModel e CourseUserModel com base na associação do atributo coursesUsers.
+            Join<CourseModel, CourseUserModel> userProd = root.join("coursesUsers");
+
+            // Adiciona uma condição where à consulta, especificando que o 'userId' no UserCourseModel deve ser igual ao 'userId' fornecido como parâmetro.
+            return criteriaBuilder.equal(userProd.get("userId"), userId);
         });
     }
 
