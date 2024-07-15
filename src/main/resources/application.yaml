@@ -17,3 +17,7 @@ spring:
       hibernate:
         show_sql: true                   # Mostra os SQL no console
     open-in-view: false                   # Desativa o open-in-view para evitar consultas durante a renderização de visualizações
+
+logging:
+  level:
+    com.ead.course: DEBUG   # Nivel de Log DEBUG especifico a partir do pacote base do projeto
