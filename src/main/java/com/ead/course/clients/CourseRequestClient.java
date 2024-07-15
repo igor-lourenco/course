@@ -1,7 +1,10 @@
 package com.ead.course.clients;
 
 import com.ead.course.DTOs.CourseDTO;
+import com.ead.course.DTOs.ResponsePageDTO;
+import com.ead.course.DTOs.UserDTO;
 import com.ead.course.utils.LogUtils;
+import com.ead.course.utils.RequestClientUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -19,34 +22,35 @@ import java.util.UUID;
 @Component
 @Log4j2
 public class CourseRequestClient {
+
     @Autowired
     RestTemplate restTemplate;
     @Autowired
     LogUtils logUtils;
 
-    public Page<CourseDTO> getAllCoursesByUserPaged(UUID userId, Pageable pageable) {
+    public Page<UserDTO> getAllUsersByCoursePaged(UUID courseId, Pageable pageable) {
 
-        List<CourseDTO> searchResult = null;
-        ResponseEntity<ResponsePageDTO<CourseDTO>> result = null;
-        String url = RequestClientUtil.createUrl(userId, pageable);
+        List<UserDTO> searchResult = null;
+        ResponseEntity<ResponsePageDTO<UserDTO>> result = null;
+        String url = RequestClientUtil.createUrl(courseId, pageable);
 
         try {
-            var responseType = new ParameterizedTypeReference<ResponsePageDTO<CourseDTO>>() {};
+            var responseType = new ParameterizedTypeReference<ResponsePageDTO<UserDTO>>() {};
 
-            log.info("REQUEST GET [getAllCoursesByUserPaged] - URL: {}", url);
+            log.info("REQUEST GET [getAllUsersByCoursePaged] - URL: {}", url);
 
             result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
-            Page<CourseDTO> courseDTOPage = result.getBody();
+            Page<UserDTO> courseDTOPage = result.getBody();
 
-            log.info("RESPONSE GET [getAllCoursesByUserPaged] - BODY: {}", logUtils.convertObjectToJson(courseDTOPage));
+            log.info("RESPONSE GET [getAllUsersByCoursePaged] - BODY: {}", logUtils.convertObjectToJson(courseDTOPage));
 
             searchResult = result.getBody().getContent();
-            log.info("RESPONSE [getAllCoursesByUserPaged] - Number of Elements: {}", searchResult.size());
+            log.info("RESPONSE [getAllUsersByCoursePaged] - Number of Elements: {}", searchResult.size());
 
         } catch (HttpStatusCodeException e) {
 
-            log.error("ERROR REQUEST [getAllCoursesByUserPaged] - url: {}", url);
-            log.error("ERROR [getAllCoursesByUserPaged]: {}", e);
+            log.error("ERROR REQUEST [getAllUsersByCoursePaged] - url: {}", url);
+            log.error("ERROR [getAllUsersByCoursePaged]: {}", e);
         }
 
         return result.getBody();
