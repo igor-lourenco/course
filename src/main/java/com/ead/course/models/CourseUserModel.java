@@ -1,7 +1,9 @@
 package com.ead.course.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -9,6 +11,8 @@ import java.util.UUID;
 @Entity
 @Table(name = "TB_COURSES_USERS")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL) // Ignora campos com valores nulos durante a serialização para JSON
 public class CourseUserModel {
 

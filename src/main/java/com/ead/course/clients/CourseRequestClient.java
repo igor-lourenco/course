@@ -37,8 +37,6 @@ public class CourseRequestClient {
         List<UserDTO> searchResult = null;
         ResponseEntity<ResponsePageDTO<UserDTO>> result = null;
 
-
-
         String url = REQUEST_URL + RequestClientUtil.createUrlGETAllUsersByCourse(courseId, pageable);
 
         try {
