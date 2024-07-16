@@ -6,11 +6,10 @@ import java.util.UUID;
 
 public class RequestClientUtil {
 
-    private static String REQUEST_URI = "http://localhost:8087";
 
-    public static String createUrl(UUID courseId, Pageable pageable){
+    public static String createUrlGETAllUsersByCourse(UUID courseId, Pageable pageable){
 
-        String url = REQUEST_URI + "/users?courseId=" + courseId + paginationParameters(pageable);
+        String url = "/users?courseId=" + courseId + paginationParameters(pageable);
 
         return url;
     }
