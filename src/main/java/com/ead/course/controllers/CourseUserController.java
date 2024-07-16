@@ -1,9 +1,9 @@
 package com.ead.course.controllers;
 
-import com.ead.course.DTOs.CourseDTO;
 import com.ead.course.DTOs.SubscriptionDTO;
 import com.ead.course.DTOs.UserDTO;
-import com.ead.course.clients.CourseRequestClient;
+import com.ead.course.clients.AuthUserRequestClient;
+import com.ead.course.enums.UserStatus;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.services.CourseServiceInterface;
@@ -18,9 +18,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 
 import javax.validation.Valid;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class CourseUserController {
 
     @Autowired
-    CourseRequestClient courseRequestClient;
+    AuthUserRequestClient authUserRequestClient;
     @Autowired
     CourseServiceInterface courseService;
     @Autowired
@@ -44,7 +44,7 @@ public class CourseUserController {
             @PathVariable(value = "courseId") UUID courseId){
         log.info("REQUEST - GET [findAllUsersByCoursePaged] PARAMS :: courseId: {} - PAGED: {}", courseId, pageable.toString());
 
-        Page<UserDTO> coursesByUserPaged = courseRequestClient.getAllUsersByCoursePaged(courseId, pageable);
+        Page<UserDTO> coursesByUserPaged = authUserRequestClient.getAllUsersByCoursePaged(courseId, pageable);
 
         String pageJson = logUtils.convertObjectToJson(coursesByUserPaged);
         log.info("RESPONSE - GET [findAllUsersByCoursePaged] : {}", pageJson);
@@ -70,33 +70,28 @@ public class CourseUserController {
         }
 
         //TODO: verificação no User
+            UserDTO userDTO = null;
+        try {
+            userDTO = authUserRequestClient.getOneUserById(subscriptionDTO.getUserId());
+
+            if (userDTO.getUserStatus().equals(UserStatus.BLOCKED)) {
+                log.warn("RESPONSE - GET [saveSubscriptionUserInCourse] : User is blocked! :: userId: {}", subscriptionDTO.getUserId());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: User is blocked!");
+            }
+
+        } catch (HttpStatusCodeException e) {
+
+            if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+                log.warn("RESPONSE - GET [getOneUser] : User not found :: userId: {}", subscriptionDTO.getUserId());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
+            }
+        }
+
 
         CourseUserModel courseUserModel = courseModelOptional.get().convertToCourseUserModel(subscriptionDTO.getUserId());
         courseUserModel = courseUserService.save(courseUserModel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

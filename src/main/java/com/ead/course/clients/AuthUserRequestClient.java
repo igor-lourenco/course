@@ -1,6 +1,5 @@
 package com.ead.course.clients;
 
-import com.ead.course.DTOs.CourseDTO;
 import com.ead.course.DTOs.ResponsePageDTO;
 import com.ead.course.DTOs.UserDTO;
 import com.ead.course.utils.LogUtils;
@@ -22,7 +21,7 @@ import java.util.UUID;
 
 @Component
 @Log4j2
-public class CourseRequestClient {
+public class AuthUserRequestClient {
 
     @Autowired
     RestTemplate restTemplate;
@@ -30,14 +29,13 @@ public class CourseRequestClient {
     LogUtils logUtils;
 
     @Value("${ead.api.url.authuser}")
-    private String REQUEST_URL;
+    private String REQUEST_URL_AUTHUSER;
 
     public Page<UserDTO> getAllUsersByCoursePaged(UUID courseId, Pageable pageable) {
-
         List<UserDTO> searchResult = null;
         ResponseEntity<ResponsePageDTO<UserDTO>> result = null;
 
-        String url = REQUEST_URL + RequestClientUtil.createUrlGETAllUsersByCourse(courseId, pageable);
+        String url = REQUEST_URL_AUTHUSER + RequestClientUtil.createUrlGETAllUsersByCourse(courseId, pageable);
 
         try {
             var responseType = new ParameterizedTypeReference<ResponsePageDTO<UserDTO>>() {};
@@ -45,9 +43,9 @@ public class CourseRequestClient {
             log.info("REQUEST GET [getAllUsersByCoursePaged] - URL: {}", url);
 
             result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
-            Page<UserDTO> courseDTOPage = result.getBody();
+            Page<UserDTO> userDTOPage = result.getBody();
 
-            log.info("RESPONSE GET [getAllUsersByCoursePaged] - BODY: {}", logUtils.convertObjectToJson(courseDTOPage));
+            log.info("RESPONSE GET [getAllUsersByCoursePaged] - BODY: {}", logUtils.convertObjectToJson(userDTOPage));
 
             searchResult = result.getBody().getContent();
             log.info("RESPONSE [getAllUsersByCoursePaged] - Number of Elements: {}", searchResult.size());
@@ -59,5 +57,28 @@ public class CourseRequestClient {
         }
 
         return result.getBody();
+    }
+
+    public UserDTO getOneUserById(UUID userId){
+        String url = REQUEST_URL_AUTHUSER + "/users/" + userId;
+        ResponseEntity<UserDTO> result = null;
+
+        try {
+
+            log.info("REQUEST GET [getOneUserById] - URL: {}", url);
+
+            result = restTemplate.exchange(url, HttpMethod.GET, null, UserDTO.class);
+            UserDTO userDTO = result.getBody();
+
+            log.info("RESPONSE GET [getOneUserById] - BODY: {}", logUtils.convertObjectToJson(userDTO));
+
+            return userDTO;
+
+        } catch (HttpStatusCodeException e) {
+
+            log.error("ERROR REQUEST [getOneUserById] - url: {}", url);
+            log.error("ERROR [getOneUserById]: {}", e.getMessage());
+            throw e;
+        }
     }
 }
