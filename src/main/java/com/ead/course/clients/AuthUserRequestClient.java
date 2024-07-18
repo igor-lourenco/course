@@ -85,8 +85,13 @@ public class AuthUserRequestClient {
         String url = REQUEST_URL_AUTHUSER + "/users/" + userId + "/courses/subscription";
         CourseUserDTO body = new CourseUserDTO(userId, courseId);
 
-        log.info("REQUEST POST [postSubscriptionUserInCourse] - URL: {} - BODY: {}", url, logUtils.convertObjectToJson(body));
-        ResponseEntity<String> response = restTemplate.postForEntity(url, body, String.class);
-        log.info("RESPONSE POST [postSubscriptionUserInCourse] - BODY: {}", response.getBody());
+        try {
+            log.info("REQUEST POST [postSubscriptionUserInCourse] - URL: {} - BODY: {}", url, logUtils.convertObjectToJson(body));
+            ResponseEntity<String> response = restTemplate.postForEntity(url, body, String.class);
+            log.info("RESPONSE POST [postSubscriptionUserInCourse] - BODY: {}", response.getBody());
+        } catch (HttpStatusCodeException e) {
+            log.error("ERROR [postSubscriptionUserInCourse]: {}", e.getMessage());
+            throw e;
+        }
     }
 }

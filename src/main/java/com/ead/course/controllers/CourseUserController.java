@@ -57,6 +57,8 @@ public class CourseUserController {
             @RequestBody @Valid SubscriptionDTO subscriptionDTO){
         log.info("REQUEST - POST [saveSubscriptionUserInCourse] PARAMS :: courseId: {} - BODY: {}", courseId, logUtils.convertObjectToJson(subscriptionDTO));
 
+        UserDTO userDTO = null;
+        CourseUserModel courseUserModel = null;
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
 
         if(courseModelOptional.isEmpty()){
@@ -69,7 +71,6 @@ public class CourseUserController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: subscription already exists!");
         }
 
-        UserDTO userDTO = null;
 
         try {
             userDTO = authUserRequestClient.getOneUserById(subscriptionDTO.getUserId());
@@ -79,20 +80,26 @@ public class CourseUserController {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: User is blocked!");
             }
 
+            courseUserModel = courseModelOptional.get().convertToCourseUserModel(subscriptionDTO.getUserId());
+            courseUserModel = courseUserService.saveAndSendSubscriptionUserInCourse(courseUserModel);
+
         } catch (HttpStatusCodeException e) {
 
             if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 log.warn("RESPONSE - POST [saveSubscriptionUserInCourse] : User not found :: userId: {}", subscriptionDTO.getUserId());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found!");
             }
+
+            if (e.getStatusCode().equals(HttpStatus.CONFLICT)) {
+                log.warn("RESPONSE - POST [saveSubscriptionUserInCourse] : {} ! :: userId: {}", e.getMessage(), subscriptionDTO.getUserId());
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+
+            }
         }
-
-        CourseUserModel courseUserModel = courseModelOptional.get().convertToCourseUserModel(subscriptionDTO.getUserId());
-        courseUserModel = courseUserService.saveAndSendSubscriptionUserInCourse(courseUserModel);
-
 
         log.info("RESPONSE - POST [saveSubscriptionUserInCourse] : {}", logUtils.convertObjectToJson(courseUserModel));
         return ResponseEntity.status(HttpStatus.CREATED).body(courseUserModel);
+
     }
 
 }

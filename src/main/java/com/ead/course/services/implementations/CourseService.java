@@ -1,9 +1,11 @@
 package com.ead.course.services.implementations;
 
 import com.ead.course.models.CourseModel;
+import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
 import com.ead.course.models.ModuleModel;
 import com.ead.course.repositories.CourseRepository;
+import com.ead.course.repositories.CourseUserRepository;
 import com.ead.course.repositories.LessonRepository;
 import com.ead.course.repositories.ModuleRepository;
 import com.ead.course.services.CourseServiceInterface;
@@ -27,6 +29,8 @@ public class CourseService implements CourseServiceInterface {
     ModuleRepository moduleRepository;
     @Autowired
     LessonRepository lessonRepository;
+    @Autowired
+    CourseUserRepository courseUserRepository;
 
     @Override
     @Transactional
@@ -40,14 +44,22 @@ public class CourseService implements CourseServiceInterface {
                 List<LessonModel> lessonModelList = lessonRepository.findAllLessonsIntoModule(moduleModel.getModuleId());
 
                 if(!lessonModelList.isEmpty()){
-                    lessonRepository.deleteAll(lessonModelList); // remove todas as 'lessons' vinculadas a esse 'module'
+                    lessonRepository.deleteAll(lessonModelList); // Deleta todas as 'lessons' vinculadas a esse 'module'
                 }
             }
 
-            moduleRepository.deleteAll(moduleModelList); //remove todas os 'modules' vinculadas a esse 'course'
+            moduleRepository.deleteAll(moduleModelList); //Deleta todas os 'modules' vinculadas a esse 'course'
         }
 
-        courseRepository.delete(courseModel);
+        List<CourseUserModel> courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
+
+        if(!courseUserModelList.isEmpty()){
+           courseUserRepository.deleteAll(courseUserModelList);  // Deleta da tabela TB_COURSES_USERS todos os registros vinculados a esse courseId
+        }
+
+//        TODO: Falta fazer a deleção também no outro micro-serviço User, relacionado a esse 'courseId' para manter a consistência dos dados em ambos micro-serviços
+
+        courseRepository.delete(courseModel); // Depois de deletar em cascata os registros vinculados a esse course, deleta esse course
     }
 
     @Override
