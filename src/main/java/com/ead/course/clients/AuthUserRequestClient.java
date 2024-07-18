@@ -76,8 +76,6 @@ public class AuthUserRequestClient {
             return userDTO;
 
         } catch (HttpStatusCodeException e) {
-
-            log.error("ERROR REQUEST [getOneUserById] - url: {}", url);
             log.error("ERROR [getOneUserById]: {}", e.getMessage());
             throw e;
         }

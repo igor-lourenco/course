@@ -5,6 +5,7 @@ import com.ead.course.models.CourseModel;
 import com.ead.course.services.CourseServiceInterface;
 import com.ead.course.specifications.SpecificationTemplate;
 import com.ead.course.utils.LogUtils;
+import com.ead.course.validation.CourseValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,6 +35,8 @@ public class CourseController {
     CourseServiceInterface courseService;
     @Autowired
     LogUtils logUtils;
+    @Autowired
+    CourseValidator courseValidator;
 
     @GetMapping
     public ResponseEntity<Page<CourseModel>> getAllCoursesPaged(
@@ -70,8 +74,15 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveCourse(@RequestBody @Valid CourseDTO courseDTO){
+    public ResponseEntity<?> saveCourse(@RequestBody CourseDTO courseDTO, Errors errors){
         log.info("REQUEST - POST [saveCourse] : BODY: {}", logUtils.convertObjectToJson(courseDTO));
+
+        courseValidator.validate(courseDTO, errors); // Faz a validação que foi implementada para validar os campos vindo no body da requisição
+
+        if(errors.hasErrors()){ // Se tiver algum erro de validação
+        log.info("RESPONSE - POST [saveCourse] : BODY: {}", logUtils.convertObjectToJson(errors.getAllErrors()));
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errors.getAllErrors()); // retorna toda a lista com esses erros
+        }
 
         CourseModel courseModel = new CourseModel();
         BeanUtils.copyProperties(courseDTO, courseModel);
